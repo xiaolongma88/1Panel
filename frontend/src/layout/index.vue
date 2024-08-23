@@ -8,7 +8,8 @@
         <div class="main-container">
             <mobile-header v-if="classObj.mobile" />
             <Tabs v-if="classObj.openMenuTabs" />
-            <app-main :keep-alive="classObj.openMenuTabs ? tabsStore.cachedTabs : null" class="app-main" />
+            <app-main v-if="!globalStore.isFullScreen" :keep-alive="classObj.openMenuTabs ? tabsStore.cachedTabs : null" class="app-main" />
+            <app-main v-if="globalStore.isFullScreen" :keep-alive="classObj.openMenuTabs ? tabsStore.cachedTabs : null" class="app-main-full" />
             <Footer class="app-footer" v-if="!globalStore.isFullScreen" />
         </div>
     </div>
@@ -142,6 +143,11 @@ onMounted(() => {
 }
 .app-main {
     padding: 20px;
+    flex: 1;
+    overflow: auto;
+}
+.app-main-full {
+    padding: 0;
     flex: 1;
     overflow: auto;
 }

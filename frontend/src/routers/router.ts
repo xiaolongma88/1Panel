@@ -59,7 +59,6 @@ rolesRoutes.forEach((item) => {
     menuList.push(menuItem);
 });
 menuList.unshift(homeRouter);
-
 export const routes: RouteRecordRaw[] = [
     homeRouter,
     {

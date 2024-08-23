@@ -299,6 +299,7 @@ const message = {
     },
     menu: {
         home: '概览',
+        data: '可视化大屏',
         apps: '应用商店',
         website: '网站',
         project: '项目',
