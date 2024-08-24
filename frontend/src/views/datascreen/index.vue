@@ -87,8 +87,8 @@
                 <el-col :span="10">
                     <div style="height: 100%;display: flex;flex-direction: column">
                         <div style="flex: 5%;background-color:gold"></div>
-                        <div style="flex: 65%;background-color:greenyellow"></div>
-                        <div style="flex: 30%;background-color:gray"></div>
+                        <div style="flex: 85%;background-color:greenyellow"></div>
+                        <div style="flex: 10%;background-color:gray"></div>
                     </div>
                 </el-col>
                 <el-col :span="7">
