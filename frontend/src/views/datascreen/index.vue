@@ -86,16 +86,70 @@
                 </el-col>
                 <el-col :span="10">
                     <div style="height: 100%;display: flex;flex-direction: column">
-                        <div style="flex: 5%;background-color:gold"></div>
-                        <div style="flex: 85%;background-color:greenyellow"></div>
-                        <div style="flex: 10%;background-color:gray"></div>
+                        <div style="flex: 5%;color:#ffffff;display: flex;padding: 0 10px 0 10px;">
+                            <div style="flex: 20%;display: flex;align-items: center;">
+                                <img src="./assets/s2.png" alt="">
+                                <h5 style="margin: 0 10px 0 5px">系统</h5>
+                                <span style="font-size: 15px;">debian</span>
+                            </div>
+                            <div style="flex: 50%;display: flex;align-items: center">
+                                <img src="./assets/s1.png" alt="">
+                                <h5 style="margin: 0 10px 0 5px">启动时间</h5>
+                                <span style="font-size: 15px;">2024-08-25 01:01:59</span>
+                            </div>
+                            <div style="flex: 30%;display: flex;align-items: center;">
+                                <img src="./assets/s3.png" alt="">
+                                <h5 style="margin: 0 10px 0 5px">运行时长</h5>
+                                <span style="font-size: 15px;"> 21分钟</span>
+                            </div>
+                        </div>
+                        <div style="flex: 85%;display: flex;flex-wrap: wrap; row-gap: 20px;column-gap: 15px;padding: 10px">
+                            <div class="video-normal" style="flex: 40%"></div>
+                            <div class="video-normal" style="flex: 40%"></div>
+                            <div class="video-normal" style="flex: 40%"></div>
+                            <div class="video-normal" style="flex: 40%"></div>
+                            <div class="video-normal" style="flex: 40%"></div>
+                            <div class="video-normal" style="flex: 40%"></div>
+                        </div>
+                        <div style="flex: 10%;color: #ffffff;display: flex;flex-wrap: wrap">
+                            <div style="flex:1;display: flex;flex-direction:column;align-items: center"><img src="./assets/device1.png" alt="" style="width: 30%"><h6 style="margin: 0">HK-001</h6></div>
+                            <div style="flex:1;display: flex;flex-direction:column;align-items: center"><img src="./assets/device1.png" alt="" style="width: 30%"><h6 style="margin: 0">HK-002</h6></div>
+                            <div style="flex:1;display: flex;flex-direction:column;align-items: center"><img src="./assets/device2.png" alt="" style="width: 30%"><h6 style="margin: 0">HK-003</h6></div>
+                            <div style="flex:1;display: flex;flex-direction:column;align-items: center"><img src="./assets/device1.png" alt="" style="width: 30%"><h6 style="margin: 0">HK-004</h6></div>
+                            <div style="flex:1;display: flex;flex-direction:column;align-items: center"><img src="./assets/device2.png" alt="" style="width: 30%"><h6 style="margin: 0">HK-005</h6></div>
+                            <div style="flex:1;display: flex;flex-direction:column;align-items: center"><img src="./assets/device1.png" alt="" style="width: 30%"><h6 style="margin: 0">HK-006</h6></div>
+                        </div>
                     </div>
                 </el-col>
                 <el-col :span="7">
                     <div style="height: 100%;display: flex;flex-direction: column">
-                        <div style="flex: 33%;background-color:#fff"></div>
-                        <div style="flex: 33%;background-color:pink"></div>
-                        <div style="flex: 33%;background-color:red"></div>
+                        <div style="flex: 33%;">
+                            <div class="title-bg">
+                                <img src="./assets/title_ico.png" style="width: 5%;height: 5%;text-align: center"  alt="">
+                                <h3 style="margin: 0 0 0 8px">磁盘IO</h3>
+                            </div>
+                            <div style="height: 90%;margin-top: 1%;" >
+                                <div style="height: 100%;min-height: 15rem;" ref="rightOneRef"></div>
+                            </div>
+                        </div>
+                        <div style="flex: 33%;">
+                            <div class="title-bg">
+                                <img src="./assets/title_ico.png" style="width: 5%;height: 5%;text-align: center"  alt="">
+                                <h3 style="margin: 0 0 0 8px">相机统计数据</h3>
+                            </div>
+                            <div style="height: 90%;margin-top: 1%;" >
+                                <div style="height: 100%;min-height: 15rem;" ref="rightTwoRef"></div>
+                            </div>
+                        </div>
+                        <div style="flex: 33%;">
+                            <div class="title-bg">
+                                <img src="./assets/title_ico.png" style="width: 5%;height: 5%;text-align: center"  alt="">
+                                <h3 style="margin: 0 0 0 8px">相机统计数据</h3>
+                            </div>
+                            <div style="height: 90%;margin-top: 1%;" >
+                                <div style="height: 100%;min-height: 15rem;" ref="rightThreeRef"></div>
+                            </div>
+                        </div>
                     </div>
                 </el-col>
             </el-row>
@@ -117,6 +171,9 @@ const statusRef = ref();
 const leftOneRef = ref()
 const leftTwoRef = ref()
 const leftThreeRef = ref()
+const rightOneRef = ref()
+const rightTwoRef = ref()
+const rightThreeRef= ref()
 
 let isStatusInit = ref<boolean>(true);
 let timer: NodeJS.Timer | null = null;
@@ -357,6 +414,224 @@ const initLeftThree = () => {
     myChart.setOption(option);
     state.myCharts.push(myChart);
 }
+const initRightOne = () => {
+    const myChart = echarts.init(rightOneRef.value)
+    const option = {
+        grid:{
+            left: '10%',
+            right:'10%',
+            top: '10%',
+            bottom:'10%',
+        },
+        xAxis: {
+            type: 'category',
+            axisLabel: {
+                fontSize: 12,
+                color: '#fff',
+            },
+            axisLine: {
+                lineStyle: {
+                    type: 'dashed'
+                }
+            },
+            data: ['12:01:10', '12:01:20', '12:01:30', '12:01:40', '12:01:50', '12:01:60', '12:01:70']
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: {
+                fontSize: 12,
+                color: '#fff',
+            },
+            splitLine: {
+                show: false,
+            }
+        },
+        legend: {
+            data: ['输入', '输出'],
+            textStyle:{
+                color:'#fff'
+            },
+        },
+        series: [
+            {
+                name:'输入',
+                data: [150, 230, 224, 218, 135, 147, 260],
+                type: 'line',
+                itemStyle: {
+                    color: '#fff',
+                    borderColor: '#00ff00',
+                    borderWidth: 4,
+                    radius: 8
+                },
+                lineStyle: {
+                    width: 3,
+                    color: '#00FFAF',
+                },
+                areaStyle: {
+                    color: {
+                        x: 0,
+                        y: 0,
+                        x2: 0,
+                        y2: 1,
+                        colorStops: [
+                            {
+                                offset: 0,
+                                color: '#00FFAF'
+                            },
+                            {
+                                offset: 1,
+                                color: 'rgba(255, 255, 255, 0)'
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                name:'输出',
+                data: [170, 200, 211, 230, 155, 127, 255],
+                type: 'line',
+                itemStyle: {
+                    color: '#fff',
+                    borderColor: '#00ff00',
+                    borderWidth: 4,
+                    radius: 8
+                },
+                lineStyle: {
+                    width: 3,
+                    color: '#05caf6',
+                },
+                areaStyle: {
+                    color: {
+                        x: 0,
+                        y: 0,
+                        x2: 0,
+                        y2: 1,
+                        colorStops: [
+                            {
+                                offset: 0,
+                                color: '#05caf6'
+                            },
+                            {
+                                offset: 1,
+                                color: 'rgba(255, 255, 255, 0)'
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    };
+    myChart.setOption(option);
+    state.myCharts.push(myChart);
+}
+const initRightTwo = () => {
+    const myChart = echarts.init(rightTwoRef.value)
+    const option = {
+        grid:{
+            left: '13%',
+            right:'10%',
+            top: '10%',
+            bottom:'10%',
+        },
+        xAxis: {
+            show: false
+        },
+        yAxis: {
+            data: ['HK-001', 'HK-002', 'HK-003', 'HK-004', 'HK-005', 'HK-006'],
+            axisLabel: {
+                fontSize: 12,
+                color: '#fff',
+            },
+        },
+        series: [
+            {
+                name: '数量',
+                type: 'bar',
+                barWidth: 15,
+                label: {
+                    show: true,
+                    position: 'right',
+                    valueAnimation: true,
+                    formatter: function (params) {
+                        return params.value;
+                    },
+                    textStyle:{
+                        color: function(params) {
+                            if (params.value >= 900) {
+                                return'#00FFAF';
+                            } else {
+                                return '#fff';
+                            }
+                        }
+                    }
+                },
+                itemStyle: {
+                    color: function(params) {
+                        if (params.value >= 900) {
+                            return'#00FFAF';
+                        } else {
+                            return 'rgba(255, 255, 255, 0.6)';
+                        }
+                    }
+                },
+                data: [900, 480, 18, 80, 8, 1880]
+            }
+        ]
+    };
+    myChart.setOption(option);
+    state.myCharts.push(myChart);
+}
+const initRightThree = () => {
+    const myChart = echarts.init(rightThreeRef.value)
+    const option = {
+        grid:{
+            left: '13%',
+            right:'10%',
+            top: '10%',
+            bottom:'10%',
+            lineStyle: {
+                type: 'dashed'  // 将网格线设置为虚线
+            }
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            axisLabel: {
+                fontSize: 12,
+                color: '#fff',
+            },
+            data: ['05-04', '05-05', '05-06', '05-07', '05-09', '05-10', '05-11']
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: {
+                fontSize: 12,
+                color: '#fff',
+            },
+            splitLine: {
+                show: true,
+            }
+        },
+        series: [
+            {
+                type: 'line',
+                smooth: true,
+                data: [20, 10, 30, 60, 50, 80, 30],
+                itemStyle: {
+                    color: '#ffffff'
+                },
+                lineStyle: {
+                    color: 'rgb(13,229,162)'
+                },
+                areaStyle: {
+                    color: 'rgb(9,148,106)'
+                }
+            }
+        ]
+    }
+    myChart.setOption(option);
+    state.myCharts.push(myChart);
+}
 const onLoadCurrentInfo = async () => {
     const res = await loadCurrentInfo(searchInfo.ioOption, searchInfo.netOption);
     currentInfo.value.timeSinceUptime = res.data.timeSinceUptime;
@@ -473,15 +748,20 @@ const exitFullScreen = (event) => {
     if (!globalStore.isFullScreen && clientX >= rect.width&& clientY <= 30) {
         // 执行点击右上角伪元素时的逻辑
         globalStore.isFullScreen = true
+        initEchartsResizeFun();
     }
     if (globalStore.isFullScreen && clientX >= rect.right - 30 && clientY <= 30) {
         globalStore.isFullScreen = false
+        initEchartsResizeFun();
     }
 }
 
 onMounted(() => {
     initLeftTwo()
     initLeftThree()
+    initRightOne()
+    initRightTwo()
+    initRightThree()
     initEchartsResize()
 })
 onBeforeUnmount(() => {
@@ -564,5 +844,9 @@ watch(
 }
 .sys-info {
     background-image: url("./assets/bg_circle.png");
+}
+.video-normal {
+    background-image: url("./assets/bg-video.png");
+    background-size: 100% 100%;
 }
 </style>
