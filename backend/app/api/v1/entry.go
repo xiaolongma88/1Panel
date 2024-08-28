@@ -43,6 +43,8 @@ var (
 	settingService = service.NewISettingService()
 	backupService  = service.NewIBackupService()
 
+	cameraService = service.NewICameraService()
+
 	commandService = service.NewICommandService()
 
 	websiteService            = service.NewIWebsiteService()

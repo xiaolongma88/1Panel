@@ -1009,6 +1009,28 @@ const docTemplate = `{
                 }
             }
         },
+        "/camera/conf/info": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取相机配置",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Camera"
+                ],
+                "summary": "get camera config info",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/containers": {
             "post": {
                 "security": [
@@ -15803,6 +15825,9 @@ const docTemplate = `{
             ],
             "properties": {
                 "detailName": {
+                    "type": "string"
+                },
+                "fileName": {
                     "type": "string"
                 },
                 "name": {
