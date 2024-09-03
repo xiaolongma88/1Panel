@@ -14,5 +14,6 @@ func (c *CameraRouter) InitRouter(Router *gin.RouterGroup) {
 	baseApi := v1.ApiGroupApp.BaseApi
 	{
 		cameraRouter.GET("/conf/info", baseApi.GetCameraConfig)
+		cameraRouter.POST("/conf/update", baseApi.UpdateCameraConfig)
 	}
 }

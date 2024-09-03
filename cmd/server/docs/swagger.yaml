@@ -6176,6 +6176,19 @@ paths:
       summary: get camera config info
       tags:
       - Camera
+  /camera/conf/update:
+    post:
+      consumes:
+      - application/json
+      description: 全量更新相机配置
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: edit camera config info
+      tags:
+      - Camera
   /containers:
     post:
       consumes:

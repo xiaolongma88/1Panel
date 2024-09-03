@@ -18,6 +18,16 @@ const toolboxRouter = {
             meta: {},
             children: [
                 {
+                    path: 'camera',
+                    name: 'Camera',
+                    component: () => import('@/views/toolbox/camera/index.vue'),
+                    hidden: true,
+                    meta: {
+                        activeMenu: '/toolbox',
+                        requiresAuth: false,
+                    },
+                },
+                {
                     path: 'device',
                     name: 'Device',
                     component: () => import('@/views/toolbox/device/index.vue'),

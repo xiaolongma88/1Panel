@@ -104,12 +104,15 @@
                             </div>
                         </div>
                         <div style="flex: 85%;display: flex;flex-wrap: wrap; row-gap: 20px;column-gap: 15px;padding: 10px">
-                            <div class="video-normal" style="flex: 40%"></div>
-                            <div class="video-normal" style="flex: 40%"></div>
-                            <div class="video-normal" style="flex: 40%"></div>
-                            <div class="video-normal" style="flex: 40%"></div>
-                            <div class="video-normal" style="flex: 40%"></div>
-                            <div class="video-normal" style="flex: 40%"></div>
+                            <el-scrollbar style="height: 400px;">
+                                <el-tabs v-model="activeName"  @tab-click="handleClick" style="color: #ffffff;width: 100%">
+                                    <el-tab-pane v-for="(v,k) in form.cameras" :label="v.camID" :name="v.camID">
+                                        {{v.rtspPath}}
+                                        <div class="video-normal" style="width: 100%"><canvas id="video-canvas"></canvas></div>
+                                    </el-tab-pane>
+                                </el-tabs>
+                            </el-scrollbar>
+
                         </div>
                         <div style="flex: 10%;color: #ffffff;display: flex;flex-wrap: wrap">
                             <div style="flex:1;display: flex;flex-direction:column;align-items: center"><img src="./assets/device1.png" alt="" style="width: 30%"><h6 style="margin: 0">HK-001</h6></div>
@@ -164,6 +167,8 @@ import i18n from "@/lang";
 import { loadCurrentInfo } from "@/api/modules/dashboard";
 import { dateFormatForSecond } from "@/utils/util";
 import { Dashboard } from "@/api/interface/dashboard";
+import {getCameraConfigs,updateCameraConfig} from '@/api/modules/camera'
+import './jsmpeg.min.js'
 
 const globalStore = GlobalStore();
 
@@ -185,11 +190,16 @@ const ioReadBytes = ref<Array<number>>([]);
 const ioWriteBytes = ref<Array<number>>([]);
 const netBytesSents = ref<Array<number>>([]);
 const netBytesRecvs = ref<Array<number>>([]);
+
 const searchInfo = reactive({
     ioOption: 'all',
     netOption: 'all',
 });
-
+const form = reactive({
+    kafka:{},
+    cameras:[],
+    labels:[],
+});
 const state = reactive({
     myCharts: [] ,
 });
@@ -261,6 +271,21 @@ const currentChartInfo = reactive({
     netBytesRecv: 0,
 });
 
+const initConfig = async () => {
+    const res = await getCameraConfigs()
+    form.kafka = res.data.KafkaConfig
+    form.cameras = res.data.CamereConfig.cameraList
+    form.labels = res.data.LabelConfig.labelList
+
+}
+const initRTSP = () => {
+    let canvas = document.getElementById('video-canvas');
+//url为服务端提供rtsp视频流转码后的推流地址
+    let url = 'ws://127.0.0.1:8085/ch1';
+//调用jsmpeg提供的api,开始绘制
+//可以通过player对视频进行如暂停，播放等控制
+    let player = new JSMpeg.Player(url, {canvas: canvas});
+}
 const initLeftTwo = () => {
     const myChart = echarts.init(leftTwoRef.value);
     const option = {
@@ -756,7 +781,15 @@ const exitFullScreen = (event) => {
     }
 }
 
+const activeName = ref('first')
+
+const handleClick = (tab: TabsPaneContext, event: Event) => {
+    console.log(tab, event)
+}
+
 onMounted(() => {
+    initConfig()
+    initRTSP()
     initLeftTwo()
     initLeftThree()
     initRightOne()
@@ -848,5 +881,23 @@ watch(
 .video-normal {
     background-image: url("./assets/bg-video.png");
     background-size: 100% 100%;
+}
+:deep(.el-tabs__item) {
+    color: #ffffff;
+}
+:deep(.el-tabs__item:hover) {
+    color: #00FFAF;
+}
+:deep(.el-tabs__item.is-active){
+    color: #00FFAF
+}
+:deep(.el-tabs__active-bar){
+    background-color: #00FFAF
+}
+:deep(.el-tabs__nav-next){
+    color: #00FFAF
+}
+:deep(.el-tabs__nav-prev){
+    color: #00FFAF
 }
 </style>

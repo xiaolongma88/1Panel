@@ -1,7 +1,7 @@
 import { Layout } from '@/routers/constant';
 
 const appStoreRouter = {
-    sort: 2,
+    /*sort: 2,
     path: '/apps',
     component: Layout,
     redirect: '/apps/all',
@@ -52,7 +52,7 @@ const appStoreRouter = {
                 },
             ],
         },
-    ],
+    ],*/
 };
 
 export default appStoreRouter;

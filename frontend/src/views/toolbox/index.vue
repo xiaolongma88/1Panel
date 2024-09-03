@@ -50,6 +50,10 @@ const onSave = async () => {
 
 const buttons = [
     {
+        label: i18n.global.t('toolbox.camera.toolbox'),
+        path: '/toolbox/camera',
+    },
+    {
         label: i18n.global.t('toolbox.device.toolbox'),
         path: '/toolbox/device',
     },

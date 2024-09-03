@@ -1,7 +1,7 @@
 import { Layout } from '@/routers/constant';
 
 const webSiteRouter = {
-    sort: 3,
+    /*sort: 3,
     path: '/websites',
     component: Layout,
     redirect: '/websites',
@@ -78,7 +78,7 @@ const webSiteRouter = {
                 requiresAuth: false,
             },
         },
-    ],
+    ],*/
 };
 
 export default webSiteRouter;

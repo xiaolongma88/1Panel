@@ -1,7 +1,7 @@
 import { Layout } from '@/routers/constant';
 
 const containerRouter = {
-    sort: 5,
+    /*sort: 5,
     path: '/containers',
     component: Layout,
     redirect: '/containers/container',
@@ -111,7 +111,7 @@ const containerRouter = {
                 },
             ],
         },
-    ],
+    ],*/
 };
 
 export default containerRouter;

@@ -3,8 +3,11 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/1Panel-dev/1Panel/backend/app/dto"
 	"github.com/1Panel-dev/1Panel/backend/app/dto/response"
 	"github.com/1Panel-dev/1Panel/backend/utils/files"
+	"io/fs"
+	"os/exec"
 )
 
 type CameraService struct {
@@ -12,6 +15,7 @@ type CameraService struct {
 
 type ICameraService interface {
 	GetContent() (response.Config, error)
+	UpdateContent(config dto.CameraContent) error
 }
 
 func NewICameraService() ICameraService {
@@ -36,4 +40,30 @@ func (f *CameraService) GetContent() (response.Config, error) {
 	fmt.Println("解析成功")
 	// 复写配置
 	return config, nil
+}
+
+func (f *CameraService) UpdateContent(config dto.CameraContent) error {
+	newContent, err := json.Marshal(config)
+	if err != nil {
+		fmt.Println("转换出错:", err)
+		return err
+	}
+	fileOp := files.NewFileOp()
+	if err := fileOp.SaveFile("/jetsonDetect/config/config.json", string(newContent), fs.FileMode(0755)); err != nil {
+		fmt.Println("保存出错", err)
+		return err
+	}
+	// 定义shell脚本的路径
+	scriptPath := "/jetsonDetect/jetson_restart.sh"
+	// 创建一个Cmd对象，执行shell脚本
+	cmd := exec.Command("/bin/bash", scriptPath)
+	// 获取命令的输出
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+	// 打印输出结果
+	fmt.Println(string(output))
+	return nil
 }

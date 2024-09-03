@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/1Panel-dev/1Panel/backend/app/api/v1/helper"
+	"github.com/1Panel-dev/1Panel/backend/app/dto"
 	"github.com/1Panel-dev/1Panel/backend/constant"
 	"github.com/gin-gonic/gin"
 )
@@ -20,4 +21,24 @@ func (b *BaseApi) GetCameraConfig(c *gin.Context) {
 		return
 	}
 	helper.SuccessWithData(c, config)
+}
+
+// @Tags Camera
+// @Summary edit camera config info
+// @Description 全量更新相机配置
+// @Accept json
+// @Success 200
+// @Security ApiKeyAuth
+// @Router /camera/conf/update [post]
+func (b *BaseApi) UpdateCameraConfig(c *gin.Context) {
+	var req dto.CameraContent
+	if err := helper.CheckBindAndValidate(&req, c); err != nil {
+		return
+	}
+
+	if err := cameraService.UpdateContent(req); err != nil {
+		helper.ErrorWithDetail(c, constant.CodeErrInternalServer, constant.ErrTypeInternalServer, err)
+		return
+	}
+	helper.SuccessWithData(c, nil)
 }

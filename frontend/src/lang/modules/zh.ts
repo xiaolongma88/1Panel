@@ -948,6 +948,9 @@ const message = {
         emptyTerminal: '暂无终端连接',
     },
     toolbox: {
+        camera:{
+            toolbox: '相机配置',
+        },
         swap: {
             swap: 'Swap 分区',
             swapHelper1: 'Swap 的大小应该是物理内存的 1 到 2 倍，可根据具体情况进行调整；',

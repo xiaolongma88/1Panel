@@ -1031,6 +1031,28 @@ const docTemplate = `{
                 }
             }
         },
+        "/camera/conf/update": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "全量更新相机配置",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Camera"
+                ],
+                "summary": "edit camera config info",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/containers": {
             "post": {
                 "security": [
