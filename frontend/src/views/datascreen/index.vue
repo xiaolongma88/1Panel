@@ -104,15 +104,16 @@
                             </div>
                         </div>
                         <div style="flex: 85%;display: flex;flex-wrap: wrap; row-gap: 20px;column-gap: 15px;padding: 10px">
-                            <el-scrollbar style="height: 400px;">
-                                <el-tabs v-model="activeName"  @tab-click="handleClick" style="color: #ffffff;width: 100%">
-                                    <el-tab-pane v-for="(v,k) in form.cameras" :label="v.camID" :name="v.camID">
-                                        {{v.rtspPath}}
-                                        <div class="video-normal" style="width: 100%"><canvas id="video-canvas"></canvas></div>
-                                    </el-tab-pane>
-                                </el-tabs>
-                            </el-scrollbar>
-
+                            <el-tabs v-model="activeName"  @tab-click="handleClick" style="color: #ffffff;width: 100%;height: 50%">
+                                <el-tab-pane v-for="(v,k) in form.cameras" :label="v.camID" :name="v.camID" style="height: 100%;">
+                                    <div style="height: 99%;width: 99%">
+                                        <video :src="videoUrl" autoplay style="width:100%;height:100%;border:1px solid #00FFAF;"></video>
+                                    </div>
+                                </el-tab-pane>
+                            </el-tabs>
+                            <div style="width: 100%;height: 20rem;overflow-y: auto;" class="video-normal">
+                                <img v-for="url in urls" :src="url" style="width: 20%;margin: 10px"/>
+                            </div>
                         </div>
                         <div style="flex: 10%;color: #ffffff;display: flex;flex-wrap: wrap">
                             <div style="flex:1;display: flex;flex-direction:column;align-items: center"><img src="./assets/device1.png" alt="" style="width: 30%"><h6 style="margin: 0">HK-001</h6></div>
@@ -160,14 +161,14 @@
     </div>
 </template>
 <script setup lang="ts">
-import {onMounted,onBeforeUnmount,ref,reactive,nextTick,onActivated,watch} from 'vue'
+import { onMounted, onUnmounted, ref, reactive, nextTick, onActivated, watch, computed } from "vue";
 import { GlobalStore } from "@/store";
 import * as echarts from 'echarts';
 import i18n from "@/lang";
 import { loadCurrentInfo } from "@/api/modules/dashboard";
 import { dateFormatForSecond } from "@/utils/util";
 import { Dashboard } from "@/api/interface/dashboard";
-import {getCameraConfigs,updateCameraConfig} from '@/api/modules/camera'
+import {getCameraConfigs,updateCameraConfig,getImages} from '@/api/modules/camera'
 import './jsmpeg.min.js'
 
 const globalStore = GlobalStore();
@@ -181,7 +182,7 @@ const rightTwoRef = ref()
 const rightThreeRef= ref()
 
 let isStatusInit = ref<boolean>(true);
-let timer: NodeJS.Timer | null = null;
+// let timer: NodeJS.Timer | null = null;
 const chartOption = ref('network');
 const chartsOption = ref({ ioChart1: null, networkChart: null });
 const timeIODatas = ref<Array<string>>([]);
@@ -191,6 +192,8 @@ const ioWriteBytes = ref<Array<number>>([]);
 const netBytesSents = ref<Array<number>>([]);
 const netBytesRecvs = ref<Array<number>>([]);
 
+const urls = ref([])
+const timer = ref(null);
 const searchInfo = reactive({
     ioOption: 'all',
     netOption: 'all',
@@ -277,14 +280,6 @@ const initConfig = async () => {
     form.cameras = res.data.CamereConfig.cameraList
     form.labels = res.data.LabelConfig.labelList
 
-}
-const initRTSP = () => {
-    let canvas = document.getElementById('video-canvas');
-//url为服务端提供rtsp视频流转码后的推流地址
-    let url = 'ws://127.0.0.1:8085/ch1';
-//调用jsmpeg提供的api,开始绘制
-//可以通过player对视频进行如暂停，播放等控制
-    let player = new JSMpeg.Player(url, {canvas: canvas});
 }
 const initLeftTwo = () => {
     const myChart = echarts.init(leftTwoRef.value);
@@ -748,6 +743,16 @@ const loadData = async () => {
         };
     }
 };
+const results = async () => {
+    timer.value = setInterval(() => {
+        getImages().then((res) => {
+            urls.value = []
+            res.data.map(item => {
+                if(item !='') urls.value.push('http://localhost:9999/api/v1/camera/config/res?imageName='+item)
+            })
+        })
+    },2000)
+}
 // 批量设置 echarts resize
 const initEchartsResizeFun = () => {
     nextTick(() => {
@@ -781,15 +786,15 @@ const exitFullScreen = (event) => {
     }
 }
 
-const activeName = ref('first')
-
+const activeName = ref('001')
+const videoUrl = ref('/src/views/datascreen/video/test1.mp4')
 const handleClick = (tab: TabsPaneContext, event: Event) => {
     console.log(tab, event)
 }
 
 onMounted(() => {
     initConfig()
-    initRTSP()
+    results()
     initLeftTwo()
     initLeftThree()
     initRightOne()
@@ -797,9 +802,8 @@ onMounted(() => {
     initRightThree()
     initEchartsResize()
 })
-onBeforeUnmount(() => {
-    clearInterval(Number(timer));
-    timer = null;
+onUnmounted(() => {
+    timer.value = null;
 })
 // 监听 pinia 中的 tagsview 开启全屏变化，重新 resize 图表，防止不出现/大小不变等
 watch(
@@ -808,7 +812,36 @@ watch(
         initEchartsResizeFun();
     }
 );
-
+watch(
+    () => activeName.value,
+    () => {
+        switch (activeName.value) {
+            case '001':
+                videoUrl.value = "/src/views/datascreen/video/test1.mp4";
+                break;
+            case '002':
+                videoUrl.value = "/src/views/datascreen/video/test2.mp4";
+                break;
+            case '003':
+                videoUrl.value = "/src/views/datascreen/video/test3.mp4";
+                break;
+            case '004':
+                videoUrl.value = "/src/views/datascreen/video/test4.mp4";
+                break;
+            case '005':
+                videoUrl.value= "/src/views/datascreen/video/test5.mp4";
+                break;
+            case '006':
+                videoUrl.value = "/src/views/datascreen/video/test6.mp4";
+                break;
+            case '007':
+                videoUrl.value = "/src/views/datascreen/video/test1.mp4";
+                break;
+            default:
+                videoUrl.value = "/src/views/datascreen/video/test2.mp4";
+        }
+    }
+)
 </script>
 <style scoped lang="scss">
 .body-container {

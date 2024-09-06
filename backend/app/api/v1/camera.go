@@ -42,3 +42,17 @@ func (b *BaseApi) UpdateCameraConfig(c *gin.Context) {
 	}
 	helper.SuccessWithData(c, nil)
 }
+
+func (b *BaseApi) GetImages(c *gin.Context) {
+	result, err := cameraService.GetImages()
+	if err != nil {
+		helper.ErrorWithDetail(c, constant.CodeErrInternalServer, constant.ErrTypeInternalServer, err)
+		return
+	}
+	helper.SuccessWithData(c, result)
+}
+
+func (b *BaseApi) ShowImages(c *gin.Context) {
+	imageName := c.Query("imageName")
+	c.File("/jetsonDetect/res/" + imageName)
+}

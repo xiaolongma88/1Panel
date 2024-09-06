@@ -94,11 +94,11 @@ func NewFileInfo(op FileOption) (*FileInfo, error) {
 		MimeType:  GetMimeType(op.Path),
 		IsDetail:  op.IsDetail,
 	}
-	favoriteRepo := repo.NewIFavoriteRepo()
+	/*favoriteRepo := repo.NewIFavoriteRepo()
 	favorite, _ := favoriteRepo.GetFirst(favoriteRepo.WithByPath(op.Path))
 	if favorite.ID > 0 {
 		file.FavoriteID = favorite.ID
-	}
+	}*/
 
 	if file.IsSymlink {
 		file.LinkPath = GetSymlink(op.Path)
@@ -234,7 +234,6 @@ func (f *FileInfo) listChildren(option FileOption) error {
 			result = items[start:end]
 		}
 	}
-
 	f.Items = result
 	return nil
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/1Panel-dev/1Panel/backend/app/dto/response"
 	"github.com/1Panel-dev/1Panel/backend/utils/files"
 	"io/fs"
+	"os"
 	"os/exec"
 )
 
@@ -16,6 +17,7 @@ type CameraService struct {
 type ICameraService interface {
 	GetContent() (response.Config, error)
 	UpdateContent(config dto.CameraContent) error
+	GetImages() ([]string, error)
 }
 
 func NewICameraService() ICameraService {
@@ -66,4 +68,22 @@ func (f *CameraService) UpdateContent(config dto.CameraContent) error {
 	// 打印输出结果
 	fmt.Println(string(output))
 	return nil
+}
+
+func (f *CameraService) GetImages() ([]string, error) {
+	dir, err := os.Open("/jetsonDetect/res/")
+	if err != nil {
+		return nil, err
+	}
+	defer dir.Close()
+
+	files, err := dir.Readdir(-1)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]string, len(files))
+	for _, file := range files {
+		result = append(result, file.Name())
+	}
+	return result, nil
 }
