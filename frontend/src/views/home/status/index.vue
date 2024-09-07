@@ -42,7 +42,6 @@
                         id="cpu"
                         type="pie"
                         :option="chartsOption['cpu']"
-                        v-if="chartsOption['cpu']"
                     />
                 </template>
             </el-popover>
