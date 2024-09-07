@@ -26,14 +26,14 @@
                                     <div class="info bg1">
                                         <h4 style="width: 20%;margin-left: 15%;margin-top: 15%">相机数量</h4>
                                         <div style="width: 60%;text-align: center;padding-top: 15%">
-                                            <h3 style="margin:0">6</h3>
+                                            <h3 style="margin:0">{{form.cameras.length}}</h3>
                                             <div style="font-size: 12px;font-weight: normal;color: rgba(255, 255, 255, 0.6);">单位：个</div>
                                         </div>
                                     </div>
                                     <div class="info bg2">
                                         <h4 style="width: 20%;margin-left: 15%;margin-top: 15%">计划任务</h4>
                                         <div style="width: 60%;text-align: center;padding-top: 15%">
-                                            <h3 style="margin:0">6</h3>
+                                            <h3 style="margin:0">{{baseInfo.cronjobNumber}}</h3>
                                             <div style="font-size: 12px;font-weight: normal;color: rgba(255, 255, 255, 0.6);">单位：个</div>
                                         </div>
                                     </div>
@@ -89,18 +89,18 @@
                         <div style="flex: 5%;color:#ffffff;display: flex;padding: 0 10px 0 10px;">
                             <div style="flex: 20%;display: flex;align-items: center;">
                                 <img src="./assets/s2.png" alt="">
-                                <h5 style="margin: 0 10px 0 5px">系统</h5>
-                                <span style="font-size: 15px;">debian</span>
+                                <h5 style="margin: 0 5px 0 2px">系统</h5>
+                                <span style="font-size: 15px;">{{baseInfo.platformFamily}}</span>
                             </div>
-                            <div style="flex: 50%;display: flex;align-items: center">
+                            <div style="flex: 45%;display: flex;align-items: center">
                                 <img src="./assets/s1.png" alt="">
                                 <h5 style="margin: 0 10px 0 5px">启动时间</h5>
-                                <span style="font-size: 15px;">2024-08-25 01:01:59</span>
+                                <span style="font-size: 15px;">{{currentInfo.timeSinceUptime}}</span>
                             </div>
-                            <div style="flex: 30%;display: flex;align-items: center;">
+                            <div style="flex: 45%;display: flex;align-items: center;">
                                 <img src="./assets/s3.png" alt="">
                                 <h5 style="margin: 0 10px 0 5px">运行时长</h5>
-                                <span style="font-size: 15px;"> 21分钟</span>
+                                <span style="font-size: 15px;"> {{ loadUpTime(currentInfo.uptime) }}</span>
                             </div>
                         </div>
                         <div style="flex: 85%;display: flex;flex-wrap: wrap; row-gap: 20px;column-gap: 15px;padding: 10px">
@@ -165,7 +165,9 @@ import { onMounted, onUnmounted, ref, reactive, nextTick, onActivated, watch, co
 import { GlobalStore } from "@/store";
 import * as echarts from 'echarts';
 import i18n from "@/lang";
-import { loadCurrentInfo } from "@/api/modules/dashboard";
+import { loadBaseInfo, loadCurrentInfo } from '@/api/modules/dashboard';
+import { getIOOptions, getNetworkOptions } from '@/api/modules/host';
+import { getSettingInfo, loadUpgradeInfo } from '@/api/modules/setting';
 import { dateFormatForSecond } from "@/utils/util";
 import { Dashboard } from "@/api/interface/dashboard";
 import {getCameraConfigs,updateCameraConfig,getImages} from '@/api/modules/camera'
@@ -173,7 +175,6 @@ import './jsmpeg.min.js'
 
 const globalStore = GlobalStore();
 
-const statusRef = ref();
 const leftOneRef = ref()
 const leftTwoRef = ref()
 const leftThreeRef = ref()
@@ -182,7 +183,6 @@ const rightTwoRef = ref()
 const rightThreeRef= ref()
 
 let isStatusInit = ref<boolean>(true);
-// let timer: NodeJS.Timer | null = null;
 const chartOption = ref('network');
 const chartsOption = ref({ ioChart1: null, networkChart: null });
 const timeIODatas = ref<Array<string>>([]);
@@ -194,6 +194,8 @@ const netBytesRecvs = ref<Array<number>>([]);
 
 const urls = ref([])
 const timer = ref(null);
+let DataTimer: NodeJS.Timer | null = null;
+let isActive = ref(true);
 const searchInfo = reactive({
     ioOption: 'all',
     netOption: 'all',
@@ -652,6 +654,29 @@ const initRightThree = () => {
     myChart.setOption(option);
     state.myCharts.push(myChart);
 }
+const onLoadBaseInfo = async (isInit: boolean, range: string) => {
+    if (range === 'all' || range === 'io') {
+        ioReadBytes.value = [];
+        ioWriteBytes.value = [];
+        timeIODatas.value = [];
+    } else if (range === 'all' || range === 'network') {
+        netBytesSents.value = [];
+        netBytesRecvs.value = [];
+        timeNetDatas.value = [];
+    }
+    const res = await loadBaseInfo(searchInfo.ioOption, searchInfo.netOption);
+    baseInfo.value = res.data;
+    currentInfo.value = baseInfo.value.currentInfo;
+    await onLoadCurrentInfo();
+    isStatusInit.value = false;
+    if (isInit) {
+        DataTimer = setInterval(async () => {
+            if (isActive.value && !globalStore.isOnRestart) {
+                await onLoadCurrentInfo();
+            }
+        }, 3000);
+    }
+};
 const onLoadCurrentInfo = async () => {
     const res = await loadCurrentInfo(searchInfo.ioOption, searchInfo.netOption);
     currentInfo.value.timeSinceUptime = res.data.timeSinceUptime;
@@ -708,7 +733,7 @@ const onLoadCurrentInfo = async () => {
     }
     loadData();
     currentInfo.value = res.data;
-    statusRef.value.acceptParams(currentInfo.value, baseInfo.value, isStatusInit.value);
+    console.log(currentInfo.value);
 };
 const loadData = async () => {
     if (chartOption.value === 'io') {
@@ -743,6 +768,46 @@ const loadData = async () => {
         };
     }
 };
+function loadUpTime(uptime: number) {
+    if (uptime <= 0) {
+        return '-';
+    }
+    let days = Math.floor(uptime / 86400);
+    let hours = Math.floor((uptime % 86400) / 3600);
+    let minutes = Math.floor((uptime % 3600) / 60);
+    let seconds = uptime % 60;
+    if (days !== 0) {
+        return (
+            days +
+            i18n.global.t('commons.units.day') +
+            ' ' +
+            hours +
+            i18n.global.t('commons.units.hour') +
+            ' ' +
+            minutes +
+            i18n.global.t('commons.units.minute') +
+            ' ' +
+            seconds +
+            i18n.global.t('commons.units.second')
+        );
+    }
+    if (hours !== 0) {
+        return (
+            hours +
+            i18n.global.t('commons.units.hour') +
+            ' ' +
+            minutes +
+            i18n.global.t('commons.units.minute') +
+            ' ' +
+            seconds +
+            i18n.global.t('commons.units.second')
+        );
+    }
+    if (minutes !== 0) {
+        return minutes + i18n.global.t('commons.units.minute') + ' ' + seconds + i18n.global.t('commons.units.second');
+    }
+    return seconds + i18n.global.t('commons.units.second');
+}
 const results = async () => {
     timer.value = setInterval(() => {
         getImages().then((res) => {
@@ -789,12 +854,13 @@ const exitFullScreen = (event) => {
 const activeName = ref('001')
 const videoUrl = ref('/src/views/datascreen/video/test1.mp4')
 const handleClick = (tab: TabsPaneContext, event: Event) => {
-    console.log(tab, event)
+    // console.log(tab, event)
 }
 
 onMounted(() => {
     initConfig()
     results()
+    onLoadBaseInfo(true, 'all');
     initLeftTwo()
     initLeftThree()
     initRightOne()
