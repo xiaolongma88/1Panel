@@ -58,6 +58,16 @@ const logsRouter = {
                     },
                 },
                 {
+                    path: 'run',
+                    name: 'RunLog',
+                    component: () => import('@/views/log/run/index.vue'),
+                    hidden: true,
+                    meta: {
+                        activeMenu: '/logs',
+                        requiresAuth: false,
+                    },
+                },
+                {
                     path: 'ssh',
                     name: 'SSHLog2',
                     component: () => import('@/views/host/ssh/log/log.vue'),

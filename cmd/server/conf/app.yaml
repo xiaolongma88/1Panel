@@ -15,3 +15,10 @@ log:
   log_name: 1Panel
   log_suffix: .log
   max_backup: 10
+
+dir:
+  app: /jsonDetect/
+  app_config: /jetsonDetect/config/config.json
+  result: /jsonDetect/res/
+  app_log: /jsonDetect/log/
+

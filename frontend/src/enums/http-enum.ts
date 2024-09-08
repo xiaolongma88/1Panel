@@ -12,7 +12,7 @@ export enum ResultEnum {
     ERRAUTH = 406,
     ERRGLOBALLOADDING = 407,
     ERRXPACK = 410,
-    TIMEOUT = 20000,
+    TIMEOUT = 86400000,
     TYPE = 'success',
 }
 

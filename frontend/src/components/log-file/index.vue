@@ -120,7 +120,6 @@ const getContent = (pre: boolean) => {
     if (isLoading.value) {
         return;
     }
-    emit('update:isReading', true);
     readReq.id = props.config.id;
     readReq.type = props.config.type;
     readReq.name = props.config.name;

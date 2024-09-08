@@ -13,6 +13,9 @@
                         <el-button class="tag-button no-active" @click="onChangeRoute('SystemLog')">
                             {{ $t('logs.system') }}
                         </el-button>
+                        <el-button class="tag-button no-active"  @click="onChangeRoute('RunLog')">
+                            {{ $t('logs.run') }}
+                        </el-button>
                     </el-col>
                     <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
                         <div class="flex justify-end">

@@ -9,10 +9,14 @@ system:
   port: 9999
   username: admin #初始用户名
   password: admin123 #初始密码
-
 log:
   level: debug
   time_zone: Asia/Shanghai
   log_name: 1Panel
   log_suffix: .log
   max_backup: 10
+dir:
+  app: /jetsonDetect/
+  app_config: /jetsonDetect/config/config.json
+  result: /jetsonDetect/res/
+  app_log: /jetsonDetect/log/

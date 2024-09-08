@@ -466,6 +466,17 @@ func (f *FileService) ReadLogByLine(req request.FileReadByLineReq) (*response.Fi
 				return nil, fmt.Errorf("handle ungzip file %s failed, err: %v", fileGzPath, err)
 			}
 		}
+	case constant.TypeRun:
+		fileName := ""
+		if len(req.Name) == 0 || req.Name == time.Now().Format("2006-01-02") {
+			fileName = "jetsonDetect.log"
+		} else {
+			fileName = "jetsonDetect_" + req.Name + ".log"
+		}
+		logFilePath = path.Join(global.CONF.DirConfig.AppLogDir, fileName)
+		if _, err := os.Stat(logFilePath); err != nil {
+			return nil, err
+		}
 	case "image-pull", "image-push", "image-build", "compose-create":
 		logFilePath = path.Join(global.CONF.System.TmpDir, fmt.Sprintf("docker_logs/%s", req.Name))
 	}

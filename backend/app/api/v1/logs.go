@@ -99,6 +99,22 @@ func (b *BaseApi) GetSystemFiles(c *gin.Context) {
 }
 
 // @Tags Logs
+// @Summary Load system log files
+// @Description 获取程序日志文件列表
+// @Success 200
+// @Security ApiKeyAuth
+// @Router /logs/run/files [get]
+func (b *BaseApi) GetRunFiles(c *gin.Context) {
+	data, err := logService.ListRunLogFile()
+	if err != nil {
+		helper.ErrorWithDetail(c, constant.CodeErrInternalServer, constant.ErrTypeInternalServer, err)
+		return
+	}
+
+	helper.SuccessWithData(c, data)
+}
+
+// @Tags Logs
 // @Summary Load system logs
 // @Description 获取系统日志
 // @Success 200
@@ -111,6 +127,27 @@ func (b *BaseApi) GetSystemLogs(c *gin.Context) {
 	}
 
 	data, err := logService.LoadSystemLog(req.Name)
+	if err != nil {
+		helper.ErrorWithDetail(c, constant.CodeErrInternalServer, constant.ErrTypeInternalServer, err)
+		return
+	}
+
+	helper.SuccessWithData(c, data)
+}
+
+// @Tags Logs
+// @Summary Load run logs
+// @Description 获取程序运行日志
+// @Success 200
+// @Security ApiKeyAuth
+// @Router /logs/run [post]
+func (b *BaseApi) GetRunLogs(c *gin.Context) {
+	var req dto.OperationWithName
+	if err := helper.CheckBindAndValidate(&req, c); err != nil {
+		return
+	}
+
+	data, err := logService.LoadRunLog(req.Name)
 	if err != nil {
 		helper.ErrorWithDetail(c, constant.CodeErrInternalServer, constant.ErrTypeInternalServer, err)
 		return

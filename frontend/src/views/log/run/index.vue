@@ -1,6 +1,6 @@
 <template>
     <div>
-        <LayoutContent v-loading="loading" :title="$t('logs.system')">
+        <LayoutContent v-loading="loading" :title="$t('logs.run')">
             <template #toolbar>
                 <el-row>
                     <el-col :span="16">
@@ -10,10 +10,10 @@
                         <el-button class="tag-button no-active" @click="onChangeRoute('LoginLog')">
                             {{ $t('logs.login') }}
                         </el-button>
-                        <el-button class="tag-button" type="primary" @click="onChangeRoute('SystemLog')">
+                        <el-button class="tag-button no-active" @click="onChangeRoute('SystemLog')">
                             {{ $t('logs.system') }}
                         </el-button>
-                        <el-button class="tag-button no-active"  @click="onChangeRoute('RunLog')">
+                        <el-button class="tag-button" type="primary" @click="onChangeRoute('RunLog')">
                             {{ $t('logs.run') }}
                         </el-button>
                     </el-col>
@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { getSystemFiles } from '@/api/modules/log';
+import { getRunFiles } from '@/api/modules/log';
 import LogFile from '@/components/log-file/index.vue';
 
 const router = useRouter();
@@ -59,7 +59,7 @@ const logRef = ref();
 
 const hasContent = ref(false);
 const logConfig = reactive({
-    type: 'system',
+    type: 'detect',
     name: '',
 });
 const showLog = ref(false);
@@ -69,7 +69,7 @@ const changeTail = () => {
 };
 
 const loadFiles = async () => {
-    const res = await getSystemFiles();
+    const res = await getRunFiles();
     fileList.value = res.data || [];
     if (fileList.value) {
         logConfig.name = fileList.value[0];

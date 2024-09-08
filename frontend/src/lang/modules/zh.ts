@@ -1078,6 +1078,7 @@ const message = {
         loginAgent: '用户代理',
         loginStatus: '登录状态',
         system: '系统日志',
+        run:'程序日志',
         deleteLogs: '清空日志',
         resource: '资源',
         operate: '操作',

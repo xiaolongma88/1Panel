@@ -11,6 +11,7 @@ const (
 	TypePhp     = "php"
 	TypeSSL     = "ssl"
 	TypeSystem  = "system"
+	TypeRun     = "detect"
 )
 
 const (

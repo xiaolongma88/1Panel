@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
@@ -25,6 +26,7 @@ const logs = "https://resource.fit2cloud.com/installation-log.sh"
 
 type ILogService interface {
 	ListSystemLogFile() ([]string, error)
+	ListRunLogFile() ([]string, error)
 	CreateLoginLog(operation model.LoginLog) error
 	PageLoginLog(search dto.SearchLgLogWithPage) (int64, interface{}, error)
 
@@ -32,6 +34,7 @@ type ILogService interface {
 	PageOperationLog(search dto.SearchOpLogWithPage) (int64, interface{}, error)
 
 	LoadSystemLog(name string) (string, error)
+	LoadRunLog(name string) (string, error)
 
 	CleanLogs(logtype string) error
 }
@@ -67,6 +70,32 @@ func (u *LogService) ListSystemLogFile() ([]string, error) {
 		return nil, err
 	}
 
+	if len(files) < 2 {
+		return files, nil
+	}
+	sort.Slice(files, func(i, j int) bool {
+		return files[i] > files[j]
+	})
+
+	return files, nil
+}
+func (u *LogService) ListRunLogFile() ([]string, error) {
+	logDir := path.Join("/jetsonDetect/log/")
+	var files []string
+	if err := filepath.Walk(logDir, func(pathItem string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && strings.HasPrefix(info.Name(), "jetsonDetect_") && strings.HasSuffix(info.Name(), ".log") {
+			itemFileName := strings.TrimPrefix(info.Name(), "jetsonDetect_")
+			itemFileName = strings.TrimSuffix(itemFileName, ".log")
+			files = append(files, itemFileName)
+			return nil
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
 	if len(files) < 2 {
 		return files, nil
 	}
@@ -135,6 +164,19 @@ func (u *LogService) LoadSystemLog(name string) (string, error) {
 		if err := handleGunzip(fileGzPath); err != nil {
 			return "", fmt.Errorf("handle ungzip file %s failed, err: %v", fileGzPath, err)
 		}
+	}
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		return "", err
+	}
+	return string(content), nil
+}
+
+func (u *LogService) LoadRunLog(name string) (string, error) {
+	name = "jetsonDetect_" + name + ".log"
+	filePath := path.Join("/jetsonDetect/log/", name)
+	if _, err := os.Stat(filePath); err != nil {
+		return "", err
 	}
 	content, err := os.ReadFile(filePath)
 	if err != nil {

@@ -19,5 +19,7 @@ func (s *LogRouter) InitRouter(Router *gin.RouterGroup) {
 		operationRouter.POST("/clean", baseApi.CleanLogs)
 		operationRouter.GET("/system/files", baseApi.GetSystemFiles)
 		operationRouter.POST("/system", baseApi.GetSystemLogs)
+		operationRouter.GET("/run/files", baseApi.GetRunFiles)
+		operationRouter.POST("/run", baseApi.GetRunLogs)
 	}
 }
