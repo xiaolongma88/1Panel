@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/1Panel-dev/1Panel/backend/app/dto"
 	"github.com/1Panel-dev/1Panel/backend/app/dto/response"
 	"github.com/1Panel-dev/1Panel/backend/global"
@@ -19,6 +20,7 @@ type ICameraService interface {
 	GetContent() (response.Config, error)
 	UpdateContent(config dto.CameraContent) error
 	GetImages() ([]string, error)
+	ParseRTSP(cameraId string) (string, error)
 }
 
 func NewICameraService() ICameraService {
@@ -75,4 +77,27 @@ func (f *CameraService) GetImages() ([]string, error) {
 		result = append(result, file.Name())
 	}
 	return result, nil
+}
+
+func (f *CameraService) ParseRTSP(cameraId string) (string, error) {
+	fileOp := files.NewFileOp()
+	var data, err = fileOp.GetContent(global.CONF.DirConfig.AppConfig)
+	if err != nil {
+		return "", err
+	}
+	var config = response.Config{}
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		return "", err
+	}
+	for _, value := range config.CamereConfig.CameraList {
+		if value.CamID == cameraId {
+			cmd := exec.Command("ffmpeg", "-i", value.RtspPath, "-f", "mpegts", "-codec:v", "mpeg1video", "-s", "640x480", "-b:v", "800k", "-r", "30", "http://localhost:9998/stream/"+cameraId)
+			if err := cmd.Start(); err != nil {
+				return "", err
+			}
+		}
+	}
+
+	return "", fmt.Errorf("相机不存在")
 }

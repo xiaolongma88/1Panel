@@ -62,3 +62,13 @@ func (b *BaseApi) ShowVideos(c *gin.Context) {
 	videoName := c.Query("videoName")
 	c.File(global.CONF.DirConfig.TestVideo + videoName)
 }
+
+func (b *BaseApi) ShowRTSP(c *gin.Context) {
+	id := c.Param("id")
+	result, err := cameraService.ParseRTSP(id)
+	if err != nil {
+		helper.ErrorWithDetail(c, constant.CodeErrInternalServer, constant.ErrTypeInternalServer, err)
+		return
+	}
+	helper.SuccessWithData(c, result)
+}
