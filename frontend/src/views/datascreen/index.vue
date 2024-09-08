@@ -1141,28 +1141,28 @@ watch(
     () => {
         switch (activeName.value) {
             case "001":
-                videoUrl.value = "/src/views/datascreen/video/test1.mp4";
+                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test1.mp4";
                 break;
             case "002":
-                videoUrl.value = "/src/views/datascreen/video/test2.mp4";
+                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test2.mp4";
                 break;
             case "003":
-                videoUrl.value = "/src/views/datascreen/video/test3.mp4";
+                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test3.mp4";
                 break;
             case "004":
-                videoUrl.value = "/src/views/datascreen/video/test4.mp4";
+                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test4.mp4";
                 break;
             case "005":
-                videoUrl.value = "/src/views/datascreen/video/test5.mp4";
+                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test5.mp4";
                 break;
             case "006":
-                videoUrl.value = "/src/views/datascreen/video/test6.mp4";
+                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test6.mp4";
                 break;
             case "007":
-                videoUrl.value = "/src/views/datascreen/video/test1.mp4";
+                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test1.mp4";
                 break;
             default:
-                videoUrl.value = "/src/views/datascreen/video/test2.mp4";
+                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test2.mp4";
         }
     }
 );

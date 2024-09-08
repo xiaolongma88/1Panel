@@ -20,3 +20,4 @@ dir:
   app_config: /jetsonDetect/config/config.json
   result: /jetsonDetect/res/
   app_log: /jetsonDetect/log/
+  test_video: /jetsonDetect/video/
