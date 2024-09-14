@@ -7,8 +7,8 @@
                         <img style="width: 3%;margin-right: 10px" src="./assets/logo.png" alt="" />
                         <h1 style="width: 80%">边缘计算终端设备数据大屏展示中心</h1>
                         <div class="now-date">
-                            <h1 style="margin: 0;color: #00FFAF">12:00:00</h1>
-                            <h4 style="margin: 0">2024-09-01</h4>
+                            <h1 style="margin: 0;color: #00FFAF">{{nowDate}}</h1>
+                            <h4 style="margin: 0">{{nowDay}}</h4>
                         </div>
                     </div>
                 </el-col>
@@ -198,7 +198,7 @@ import { getIOOptions, getNetworkOptions } from "@/api/modules/host";
 import { getSettingInfo, loadUpgradeInfo } from "@/api/modules/setting";
 import { dateFormatForSecond } from "@/utils/util";
 import { Dashboard } from "@/api/interface/dashboard";
-import { getCameraConfigs, updateCameraConfig, getImages } from "@/api/modules/camera";
+import { getCameraConfigs, updateCameraConfig, getImages,parseRTSP } from "@/api/modules/camera";
 import "./jsmpeg.min.js";
 
 const globalStore = GlobalStore();
@@ -224,6 +224,8 @@ const urls = ref([]);
 const timer = ref(null);
 let DataTimer: NodeJS.Timer | null = null;
 let isActive = ref(true);
+const nowDate = ref('')
+const nowDay = ref('')
 const searchInfo = reactive({
     ioOption: "all",
     netOption: "all"
@@ -907,6 +909,7 @@ const initRightThree = () => {
     state.myCharts.push(myChart);
 };
 const onLoadBaseInfo = async (isInit: boolean, range: string) => {
+    refreshDate()
     if (range === "all" || range === "io") {
         ioReadBytes.value = [];
         ioWriteBytes.value = [];
@@ -1023,7 +1026,6 @@ const loadData = async () => {
         };
     }
 };
-
 function loadUpTime(uptime: number) {
     if (uptime <= 0) {
         return "-";
@@ -1064,11 +1066,25 @@ function loadUpTime(uptime: number) {
     }
     return seconds + i18n.global.t("commons.units.second");
 }
-
 function formatNumber(val: number) {
     return Number(val.toFixed(2));
 }
+const refreshDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    nowDay.value = `${year}:${month}:${day}`;
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+    let seconds = now.getSeconds();
 
+    // 确保时间格式为两位数
+    hours = hours < 10? `0${hours}` : hours;
+    minutes = minutes < 10? `0${minutes}` : minutes;
+    seconds = seconds < 10? `0${seconds}` : seconds;
+    nowDate.value = `${hours}:${minutes}:${seconds}`
+}
 const results = async () => {
     getImages().then((res) => {
         urls.value = [];
@@ -1111,9 +1127,13 @@ const exitFullScreen = (event) => {
 };
 
 const activeName = ref("001");
-const videoUrl = ref("/src/views/datascreen/video/test1.mp4");
+const videoUrl = ref("http://localhost:9999/api/v1/camera/test/video?videoName=test1.mp4");
 const handleClick = (tab: TabsPaneContext, event: Event) => {
-    // console.log(tab, event)
+    /*form.cameras.map((item,index) => {
+        if (item.camID == activeName.value){
+            changeVideo(index)
+        }
+    })*/
 };
 
 onMounted(() => {

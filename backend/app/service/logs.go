@@ -80,7 +80,7 @@ func (u *LogService) ListSystemLogFile() ([]string, error) {
 	return files, nil
 }
 func (u *LogService) ListRunLogFile() ([]string, error) {
-	logDir := path.Join("/jetsonDetect/log/")
+	logDir := path.Join(global.CONF.DirConfig.AppLogDir)
 	var files []string
 	if err := filepath.Walk(logDir, func(pathItem string, info fs.FileInfo, err error) error {
 		if err != nil {
@@ -174,7 +174,7 @@ func (u *LogService) LoadSystemLog(name string) (string, error) {
 
 func (u *LogService) LoadRunLog(name string) (string, error) {
 	name = "jetsonDetect_" + name + ".log"
-	filePath := path.Join("/jetsonDetect/log/", name)
+	filePath := path.Join(global.CONF.DirConfig.AppLogDir, name)
 	if _, err := os.Stat(filePath); err != nil {
 		return "", err
 	}

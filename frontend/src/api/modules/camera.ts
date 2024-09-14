@@ -11,3 +11,7 @@ export const updateCameraConfig = (req: Camera.CameraInfo) => {
 export const getImages = () => {
     return http.get('/camera/conf/img');
 }
+
+export const parseRTSP = (index:int) => {
+    return http.get('/camera/stream/'+index)
+}

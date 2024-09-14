@@ -2,12 +2,14 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/1Panel-dev/1Panel/backend/app/dto"
 	"github.com/1Panel-dev/1Panel/backend/app/dto/response"
 	"github.com/1Panel-dev/1Panel/backend/global"
 	"github.com/1Panel-dev/1Panel/backend/utils/files"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"io/fs"
+	"net/http"
 	"os"
 	"os/exec"
 	"path"
@@ -20,7 +22,7 @@ type ICameraService interface {
 	GetContent() (response.Config, error)
 	UpdateContent(config dto.CameraContent) error
 	GetImages() ([]string, error)
-	ParseRTSP(cameraId string) (string, error)
+	ParseRTSP(c *gin.Context, index int)
 }
 
 func NewICameraService() ICameraService {
@@ -79,25 +81,47 @@ func (f *CameraService) GetImages() ([]string, error) {
 	return result, nil
 }
 
-func (f *CameraService) ParseRTSP(cameraId string) (string, error) {
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+func (f *CameraService) ParseRTSP(c *gin.Context, index int) {
 	fileOp := files.NewFileOp()
 	var data, err = fileOp.GetContent(global.CONF.DirConfig.AppConfig)
 	if err != nil {
-		return "", err
+		return
 	}
 	var config = response.Config{}
 	err = json.Unmarshal(data, &config)
 	if err != nil {
-		return "", err
+		return
 	}
-	for _, value := range config.CamereConfig.CameraList {
-		if value.CamID == cameraId {
-			cmd := exec.Command("ffmpeg", "-i", value.RtspPath, "-f", "mpegts", "-codec:v", "mpeg1video", "-s", "640x480", "-b:v", "800k", "-r", "30", "http://localhost:9998/stream/"+cameraId)
-			if err := cmd.Start(); err != nil {
-				return "", err
-			}
+	cameraItem := config.CamereConfig.CameraList[index]
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		return
+	}
+	defer conn.Close()
+	//cmd := exec.Command("ffmpeg", "-i", cameraItem.RtspPath, "-f", "mpegts", "-codec:v", "mpeg1video", "-s", "640x480", "-b:v", "800k", "-r", "30", "http://localhost:9998/stream/"+cameraItem.CamID)
+	cmd := exec.Command("ffmpeg", "-rtsp_transport", "tcp", "-i", cameraItem.RtspPath, "-f", "mpegts", "-codec:v", "mpeg1video", "-")
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return
+	}
+	if err := cmd.Start(); err != nil {
+		return
+	}
+	buf := make([]byte, 1024)
+	for {
+		n, err := stdout.Read(buf)
+		if err != nil {
+			break
+		}
+		if err := conn.WriteMessage(websocket.BinaryMessage, buf[:n]); err != nil {
+			break
 		}
 	}
-
-	return "", fmt.Errorf("相机不存在")
+	cmd.Wait()
 }
