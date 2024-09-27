@@ -2,14 +2,13 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/1Panel-dev/1Panel/backend/app/dto"
 	"github.com/1Panel-dev/1Panel/backend/app/dto/response"
 	"github.com/1Panel-dev/1Panel/backend/global"
 	"github.com/1Panel-dev/1Panel/backend/utils/files"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
+	"github.com/go-acme/lego/v4/log"
 	"io/fs"
-	"net/http"
 	"os"
 	"os/exec"
 	"path"
@@ -22,7 +21,7 @@ type ICameraService interface {
 	GetContent() (response.Config, error)
 	UpdateContent(config dto.CameraContent) error
 	GetImages() ([]string, error)
-	ParseRTSP(c *gin.Context, index int)
+	ParseRTSP(rtsp dto.RtspInfo) error
 }
 
 func NewICameraService() ICameraService {
@@ -81,47 +80,18 @@ func (f *CameraService) GetImages() ([]string, error) {
 	return result, nil
 }
 
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
-func (f *CameraService) ParseRTSP(c *gin.Context, index int) {
-	fileOp := files.NewFileOp()
-	var data, err = fileOp.GetContent(global.CONF.DirConfig.AppConfig)
-	if err != nil {
-		return
+func (f *CameraService) ParseRTSP(rtspInfo dto.RtspInfo) error {
+	cmdOne := exec.Command("pkill", "ffmpeg")
+	if err := cmdOne.Run(); err != nil {
+		fmt.Println("Error closing ffmpeg processes:", err)
 	}
-	var config = response.Config{}
-	err = json.Unmarshal(data, &config)
-	if err != nil {
-		return
-	}
-	cameraItem := config.CamereConfig.CameraList[index]
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		return
-	}
-	defer conn.Close()
-	//cmd := exec.Command("ffmpeg", "-i", cameraItem.RtspPath, "-f", "mpegts", "-codec:v", "mpeg1video", "-s", "640x480", "-b:v", "800k", "-r", "30", "http://localhost:9998/stream/"+cameraItem.CamID)
-	cmd := exec.Command("ffmpeg", "-rtsp_transport", "tcp", "-i", cameraItem.RtspPath, "-f", "mpegts", "-codec:v", "mpeg1video", "-")
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return
-	}
+	fmt.Println("All ffmpeg processes closed successfully.")
+	cmdStr := fmt.Sprintf("ffmpeg -i %s -c copy -f flv rtmp://localhost:8888/live/%s", rtspInfo.RtspAddr, rtspInfo.CameraID)
+	cmd := exec.Command("sh", "-c", cmdStr)
 	if err := cmd.Start(); err != nil {
-		return
+		log.Printf("Error starting FFmpeg command: %v", err)
+		return err
 	}
-	buf := make([]byte, 1024)
-	for {
-		n, err := stdout.Read(buf)
-		if err != nil {
-			break
-		}
-		if err := conn.WriteMessage(websocket.BinaryMessage, buf[:n]); err != nil {
-			break
-		}
-	}
-	cmd.Wait()
+	fmt.Printf("Started pushing RTSP stream with ID %s to Nginx", rtspInfo.CameraID)
+	return nil
 }

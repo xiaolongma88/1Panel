@@ -12,6 +12,6 @@ export const getImages = () => {
     return http.get('/camera/conf/img');
 }
 
-export const parseRTSP = (index:int) => {
-    return http.get('/camera/stream/'+index)
+export const parseRTSP = (req:Camera.RtspInfo) => {
+    return http.post('/camera/stream',req)
 }

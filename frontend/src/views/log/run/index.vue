@@ -1,24 +1,6 @@
 <template>
     <div>
         <LayoutContent v-loading="loading" :title="$t('logs.run')">
-            <template #toolbar>
-                <el-row>
-                    <el-col :span="16">
-                        <el-button class="tag-button no-active" @click="onChangeRoute('OperationLog')">
-                            {{ $t('logs.operation') }}
-                        </el-button>
-                        <el-button class="tag-button no-active" @click="onChangeRoute('LoginLog')">
-                            {{ $t('logs.login') }}
-                        </el-button>
-                        <el-button class="tag-button no-active" @click="onChangeRoute('SystemLog')">
-                            {{ $t('logs.system') }}
-                        </el-button>
-                        <el-button class="tag-button" type="primary" @click="onChangeRoute('RunLog')">
-                            {{ $t('logs.run') }}
-                        </el-button>
-                    </el-col>
-                </el-row>
-            </template>
             <template #search>
                 <el-select class="float-left p-w-200" v-model="logConfig.name" @change="search()">
                     <template #prefix>{{ $t('commons.button.log') }}</template>

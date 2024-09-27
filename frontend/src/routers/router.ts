@@ -58,9 +58,8 @@ rolesRoutes.forEach((item) => {
     menuItem.children = menuChildren as RouteRecordRaw[];
     menuList.push(menuItem);
 });
-menuList.unshift(homeRouter);
+//menuList.unshift(homeRouter);
 export const routes: RouteRecordRaw[] = [
-    homeRouter,
     {
         path: '/login',
         name: 'login',

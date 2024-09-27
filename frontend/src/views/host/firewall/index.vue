@@ -25,3 +25,8 @@ const buttons = [
     },
 ];
 </script>
+<style lang="scss" scoped>
+:deep(.el-radio-button ){
+    --el-radio-button-checked-text-color:var(--el-color-primary)
+}
+</style>

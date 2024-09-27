@@ -1,6 +1,6 @@
 <template>
     <div>
-        <RouterButton
+<!--        <RouterButton
             :buttons="[
                 {
                     label: i18n.global.t('menu.home'),
@@ -38,11 +38,11 @@
                     </el-link>
                 </span>
             </template>
-        </el-alert>
+        </el-alert>-->
 
         <el-row :gutter="20" style="margin-top: 20px">
-            <el-col :xs="24" :sm="24" :md="16" :lg="16" :xl="16">
-                <CardWithHeader :header="$t('home.overview')" height="146px">
+            <el-col :span="24">
+<!--                <CardWithHeader :header="$t('home.overview')" height="146px">
                     <template #body>
                         <div class="h-overview">
                             <el-row>
@@ -76,6 +76,66 @@
                                 </el-col>
                             </el-row>
                         </div>
+                    </template>
+                </CardWithHeader>-->
+                <CardWithHeader :header="$t('home.systemInfo')">
+                    <template #body>
+                        <el-scrollbar>
+                            <el-descriptions :column="1" class="h-systemInfo">
+                                <el-descriptions-item class-name="system-content">
+                                    <template #label>
+                                        <span class="system-label">
+                                            {{ $t('home.hostname') }}
+                                        </span>
+                                    </template>
+                                    {{ baseInfo.hostname }}
+                                </el-descriptions-item>
+                                <el-descriptions-item class-name="system-content">
+                                    <template #label>
+                                        <span class="system-label">
+                                            {{ $t('home.platformVersion') }}
+                                        </span>
+                                    </template>
+                                    {{
+                                        baseInfo.platformVersion
+                                            ? baseInfo.platform
+                                            : baseInfo.platform + '-' + baseInfo.platformVersion
+                                    }}
+                                </el-descriptions-item>
+                                <el-descriptions-item class-name="system-content">
+                                    <template #label>
+                                        <span class="system-label">
+                                            {{ $t('home.kernelVersion') }}
+                                        </span>
+                                    </template>
+                                    {{ baseInfo.kernelVersion }}
+                                </el-descriptions-item>
+                                <el-descriptions-item class-name="system-content">
+                                    <template #label>
+                                        <span class="system-label">
+                                            {{ $t('home.kernelArch') }}
+                                        </span>
+                                    </template>
+                                    {{ baseInfo.kernelArch }}
+                                </el-descriptions-item>
+                                <el-descriptions-item class-name="system-content">
+                                    <template #label>
+                                        <span class="system-label">
+                                            {{ $t('home.uptime') }}
+                                        </span>
+                                    </template>
+                                    {{ currentInfo.timeSinceUptime }}
+                                </el-descriptions-item>
+                                <el-descriptions-item class-name="system-content">
+                                    <template #label>
+                                        <span class="system-label">
+                                            {{ $t('home.runningTime') }}
+                                        </span>
+                                    </template>
+                                    {{ loadUpTime(currentInfo.uptime) }}
+                                </el-descriptions-item>
+                            </el-descriptions>
+                        </el-scrollbar>
                     </template>
                 </CardWithHeader>
                 <CardWithHeader :header="$t('commons.table.status')" style="margin-top: 20px">
@@ -167,75 +227,17 @@
                         </div>
                     </template>
                 </CardWithHeader>
-            </el-col>
-            <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
-                <CardWithHeader :header="$t('home.systemInfo')">
-                    <template #body>
-                        <el-scrollbar>
-                            <el-descriptions :column="1" class="h-systemInfo">
-                                <el-descriptions-item class-name="system-content">
-                                    <template #label>
-                                        <span class="system-label">
-                                            {{ $t('home.hostname') }}
-                                        </span>
-                                    </template>
-                                    {{ baseInfo.hostname }}
-                                </el-descriptions-item>
-                                <el-descriptions-item class-name="system-content">
-                                    <template #label>
-                                        <span class="system-label">
-                                            {{ $t('home.platformVersion') }}
-                                        </span>
-                                    </template>
-                                    {{
-                                        baseInfo.platformVersion
-                                            ? baseInfo.platform
-                                            : baseInfo.platform + '-' + baseInfo.platformVersion
-                                    }}
-                                </el-descriptions-item>
-                                <el-descriptions-item class-name="system-content">
-                                    <template #label>
-                                        <span class="system-label">
-                                            {{ $t('home.kernelVersion') }}
-                                        </span>
-                                    </template>
-                                    {{ baseInfo.kernelVersion }}
-                                </el-descriptions-item>
-                                <el-descriptions-item class-name="system-content">
-                                    <template #label>
-                                        <span class="system-label">
-                                            {{ $t('home.kernelArch') }}
-                                        </span>
-                                    </template>
-                                    {{ baseInfo.kernelArch }}
-                                </el-descriptions-item>
-                                <el-descriptions-item class-name="system-content">
-                                    <template #label>
-                                        <span class="system-label">
-                                            {{ $t('home.uptime') }}
-                                        </span>
-                                    </template>
-                                    {{ currentInfo.timeSinceUptime }}
-                                </el-descriptions-item>
-                                <el-descriptions-item class-name="system-content">
-                                    <template #label>
-                                        <span class="system-label">
-                                            {{ $t('home.runningTime') }}
-                                        </span>
-                                    </template>
-                                    {{ loadUpTime(currentInfo.uptime) }}
-                                </el-descriptions-item>
-                            </el-descriptions>
-                        </el-scrollbar>
-                    </template>
-                </CardWithHeader>
 
-                <CardWithHeader :header="$t('home.app')" style="margin-top: 20px">
-                    <template #body>
-                        <App ref="appRef" />
-                    </template>
-                </CardWithHeader>
             </el-col>
+            <!--                <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+
+
+                        <CardWithHeader :header="$t('home.app')" style="margin-top: 20px">
+                                <template #body>
+                                    <App ref="appRef" />
+                                </template>
+                            </CardWithHeader>
+            </el-col>-->
         </el-row>
 
         <LicenseImport ref="licenseRef" />

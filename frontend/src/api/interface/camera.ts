@@ -22,4 +22,9 @@ export namespace Camera {
     export interface LabelConfig {
         labelList: Array<string>;
     }
+
+    export interface RtspInfo {
+        CameraID: String;
+        RtspAddr: String;
+    }
 }

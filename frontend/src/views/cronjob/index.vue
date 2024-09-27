@@ -1,13 +1,13 @@
 <template>
     <div>
-        <RouterButton
+<!--        <RouterButton
             :buttons="[
                 {
                     label: i18n.global.t('cronjob.cronTask'),
                     path: '/cronjobs',
                 },
             ]"
-        />
+        />-->
         <LayoutContent v-loading="loading" v-if="!isRecordShow" :title="$t('cronjob.cronTask')">
             <template #toolbar>
                 <el-row>

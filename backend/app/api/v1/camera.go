@@ -6,7 +6,6 @@ import (
 	"github.com/1Panel-dev/1Panel/backend/constant"
 	"github.com/1Panel-dev/1Panel/backend/global"
 	"github.com/gin-gonic/gin"
-	"strconv"
 )
 
 // @Tags Camera
@@ -65,10 +64,13 @@ func (b *BaseApi) ShowVideos(c *gin.Context) {
 }
 
 func (b *BaseApi) ShowRTSP(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
+	var req dto.RtspInfo
+	if err := helper.CheckBindAndValidate(&req, c); err != nil {
+		return
+	}
+	if err := cameraService.ParseRTSP(req); err != nil {
 		helper.ErrorWithDetail(c, constant.CodeErrInternalServer, constant.ErrTypeInternalServer, err)
 		return
 	}
-	cameraService.ParseRTSP(c, id)
+	helper.SuccessWithData(c, nil)
 }

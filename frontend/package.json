@@ -38,6 +38,7 @@
         "echarts": "^5.5.0",
         "element-plus": "^2.7.5",
         "fit2cloud-ui-plus": "^1.1.4",
+        "flv.js": "^1.6.2",
         "highlight.js": "^11.9.0",
         "js-base64": "^3.7.7",
         "md-editor-v3": "^2.11.3",

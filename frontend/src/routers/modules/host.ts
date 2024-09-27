@@ -11,6 +11,16 @@ const hostRouter = {
     },
     children: [
         {
+            path: '/',
+            name: 'home',
+            component: () => import('@/views/home/index.vue'),
+            meta: {
+                keepAlive: true,
+                title: 'menu.home',
+                requiresAuth: true,
+            },
+        },
+        {
             path: '/hosts/files',
             name: 'File',
             props: true,
@@ -40,7 +50,7 @@ const hostRouter = {
                 requiresAuth: false,
             },
         },
-        {
+       /* {
             path: '/hosts/terminal',
             name: 'Terminal',
             props: true,
@@ -50,7 +60,7 @@ const hostRouter = {
                 keepAlive: true,
                 requiresAuth: false,
             },
-        },
+        },*/
         {
             path: '/hosts/firewall/port',
             name: 'FirewallPort',
@@ -129,6 +139,15 @@ const hostRouter = {
             hidden: true,
             meta: {
                 activeMenu: '/hosts/ssh/ssh',
+                requiresAuth: false,
+            },
+        },
+        {
+            path: '/hosts/syslog',
+            name: 'SysLog',
+            component: () => import('@/views/log/system/index.vue'),
+            meta: {
+                title: 'menu.syslog',
                 requiresAuth: false,
             },
         },

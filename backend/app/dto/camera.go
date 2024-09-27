@@ -24,3 +24,8 @@ type CamereConfig struct {
 type LabelConfig struct {
 	LabelList []string `json:"labelList"`
 }
+
+type RtspInfo struct {
+	RtspAddr string `json:"rtspAddr"`
+	CameraID string `json:"cameraID"`
+}

@@ -1,42 +1,43 @@
 import { Layout } from '@/routers/constant';
 
 const toolboxRouter = {
-    sort: 7,
-    path: '/toolbox',
-    component: Layout,
-    redirect: '/toolbox/supervisor',
-    meta: {
-        title: 'menu.toolbox',
-        icon: 'p-toolbox',
-    },
-    children: [
-        {
-            path: '/toolbox',
-            name: 'Toolbox',
-            redirect: '/toolbox/device',
-            component: () => import('@/views/toolbox/index.vue'),
-            meta: {},
-            children: [
-                {
-                    path: 'camera',
-                    name: 'Camera',
-                    component: () => import('@/views/toolbox/camera/index.vue'),
-                    hidden: true,
-                    meta: {
-                        activeMenu: '/toolbox',
-                        requiresAuth: false,
-                    },
+/* sort: 7,
+path: '/toolbox',
+component: Layout,
+redirect: '/toolbox/supervisor',
+meta: {
+    title: 'menu.toolbox',
+    icon: 'p-toolbox',
+},
+children: [
+    {
+        path: '/toolbox',
+        name: 'Toolbox',
+        redirect: '/toolbox/device',
+        component: () => import('@/views/toolbox/index.vue'),
+        meta: {},
+        children: [
+           {
+                path: 'camera',
+                name: 'Camera',
+                component: () => import('@/views/toolbox/camera/index.vue'),
+                hidden: true,
+                meta: {
+                    activeMenu: '/toolbox',
+                    requiresAuth: false,
                 },
-                {
-                    path: 'device',
-                    name: 'Device',
-                    component: () => import('@/views/toolbox/device/index.vue'),
-                    hidden: true,
-                    meta: {
-                        activeMenu: '/toolbox',
-                        requiresAuth: false,
-                    },
+            },
+            {
+                path: 'device',
+                name: 'Device',
+                component: () => import('@/views/toolbox/device/index.vue'),
+                hidden: true,
+                meta: {
+                    activeMenu: '/toolbox',
+                    requiresAuth: false,
                 },
+            },
+
                 {
                     path: 'supervisor',
                     name: 'Supervisor',
@@ -99,7 +100,7 @@ const toolboxRouter = {
                 },
             ],
         },
-    ],
+    ], */
 };
 
 export default toolboxRouter;

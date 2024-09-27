@@ -112,18 +112,17 @@
                                 <span style="font-size: 15px;"> {{ loadUpTime(currentInfo.uptime) }}</span>
                             </div>
                         </div>
-                        <div
-                            style="flex: 85%;display: flex;flex-wrap: wrap; row-gap: 20px;column-gap: 15px;padding: 10px">
+                        <div style="flex: 85%;display: flex;flex-wrap: wrap; row-gap: 20px;column-gap: 15px;padding: 10px">
                             <el-tabs v-model="activeName" @tab-click="handleClick"
-                                     style="color: #ffffff;width: 100%;height: 50%">
-                                <el-tab-pane v-for="(v,k) in form.cameras" :label="v.camID" :name="v.camID"
-                                             style="height: 100%;">
-                                    <div style="height: 99%;width: 99%">
-                                        <video :src="videoUrl" autoplay
-                                               style="width:100%;height:100%;border:1px solid #00FFAF;"></video>
-                                    </div>
+                                     style="color: #ffffff;width: 100%;height: 5%">
+                                <el-tab-pane v-for="(v,k) in form.cameras" :label="v.camID" :name="v.rtspPath" >
+
                                 </el-tab-pane>
+
                             </el-tabs>
+                            <div>
+                                <video id="videoElement" controls autoplay muted style="width: 100%;height: 100%;border:1px solid #00FFAF;"></video>
+                            </div>
                             <div style="width: 100%;height: 20rem;overflow-y: auto;" class="video-normal">
                                 <img v-for="url in urls" :src="url" style="width: 20%;margin: 10px" />
                             </div>
@@ -199,7 +198,7 @@ import { getSettingInfo, loadUpgradeInfo } from "@/api/modules/setting";
 import { dateFormatForSecond } from "@/utils/util";
 import { Dashboard } from "@/api/interface/dashboard";
 import { getCameraConfigs, updateCameraConfig, getImages,parseRTSP } from "@/api/modules/camera";
-import "./jsmpeg.min.js";
+import flvjs from 'flv.js';
 
 const globalStore = GlobalStore();
 
@@ -310,6 +309,17 @@ const initConfig = async () => {
     const res = await getCameraConfigs();
     form.kafka = res.data.KafkaConfig;
     form.cameras = res.data.CamereConfig.cameraList;
+    const data = {
+        CameraID: form.cameras[0].camID,
+        RtspAddr: form.cameras[0].rtspPath
+    }
+    activeName.value = form.cameras[0].camID
+    parseRTSP(data).then(res =>{
+        if (res.code == 200) {
+            videoUrl.value = "http://localhost:8080/pullLive?port=8888&app=live&stream=" + form.cameras[0].camID;
+            initFlvPlayer()
+        }
+    })
     form.labels = res.data.LabelConfig.labelList;
 
 };
@@ -1105,6 +1115,22 @@ const initEchartsResizeFun = () => {
 const initEchartsResize = () => {
     window.addEventListener("resize", initEchartsResizeFun);
 };
+//播放flv时评
+const flvPlayer = ref(null)
+const rtspVideo = ref()
+const videoUrl = ref("http://localhost:8080/pullLive?port=8888&app=live&stream=001");
+const initFlvPlayer = () => {
+    if (flvjs.isSupported()) {
+        const videoElement = document.getElementById('videoElement');
+        flvPlayer.value = flvjs.createPlayer({
+            type: 'flv',
+            url: videoUrl.value
+        });
+        flvPlayer.value.attachMediaElement(videoElement);
+        flvPlayer.value.load();
+        flvPlayer.value.play();
+    }
+}
 // 由于页面缓存原因，keep-alive
 onActivated(() => {
     initEchartsResizeFun();
@@ -1117,23 +1143,31 @@ const exitFullScreen = (event) => {
     // 假设右上角 20x20 像素区域为目标区域
     if (!globalStore.isFullScreen && clientX >= rect.width && clientY <= 30) {
         // 执行点击右上角伪元素时的逻辑
+        location.reload();
         globalStore.isFullScreen = true;
         initEchartsResizeFun();
     }
     if (globalStore.isFullScreen && clientX >= rect.right - 30 && clientY <= 30) {
+        location.reload();
         globalStore.isFullScreen = false;
         initEchartsResizeFun();
     }
 };
 
-const activeName = ref("001");
-const videoUrl = ref("http://localhost:9999/api/v1/camera/test/video?videoName=test1.mp4");
-const handleClick = (tab: TabsPaneContext, event: Event) => {
-    /*form.cameras.map((item,index) => {
-        if (item.camID == activeName.value){
-            changeVideo(index)
+const activeName = ref();
+
+const handleClick = (tab, event: Event) => {
+    const data = {
+        CameraID: tab.props.label,
+        RtspAddr: tab.props.name
+    }
+    parseRTSP(data).then(res =>{
+        if (res.code == 200) {
+            videoUrl.value = "http://localhost:8080/pullLive?port=8888&app=live&stream=" + tab.props.label;
+            initFlvPlayer()
         }
-    })*/
+    })
+
 };
 
 onMounted(() => {
@@ -1156,42 +1190,13 @@ watch(
         initEchartsResizeFun();
     }
 );
-watch(
-    () => activeName.value,
-    () => {
-        switch (activeName.value) {
-            case "001":
-                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test1.mp4";
-                break;
-            case "002":
-                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test2.mp4";
-                break;
-            case "003":
-                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test3.mp4";
-                break;
-            case "004":
-                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test4.mp4";
-                break;
-            case "005":
-                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test5.mp4";
-                break;
-            case "006":
-                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test6.mp4";
-                break;
-            case "007":
-                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test1.mp4";
-                break;
-            default:
-                videoUrl.value = "http://localhost:9999/api/v1/camera/test/video?videoName=test2.mp4";
-        }
-    }
-);
 </script>
 <style scoped lang="scss">
 .body-container {
     width: 100%;
     height: 100%;
     margin: 0;
+    //background-color: #1D2B56;
     background-image: url('./assets/bg2.png');
     background-size: cover;
     display: flex;

@@ -19,21 +19,26 @@ const buttons = [
         label: i18n.global.t('setting.safe'),
         path: '/settings/safe',
     },
-    {
+/*    {
         label: i18n.global.t('setting.backupAccount'),
         path: '/settings/backupaccount',
-    },
+    },*/
     {
         label: i18n.global.t('setting.snapshot'),
         path: '/settings/snapshot',
     },
-    {
+/*    {
         label: i18n.global.t('setting.license'),
         path: '/settings/license',
     },
     {
         label: i18n.global.t('setting.about'),
         path: '/settings/about',
-    },
+    },*/
 ];
 </script>
+<style lang="scss" scoped>
+:deep(.el-radio-button ){
+    --el-radio-button-checked-text-color:var(--el-color-primary)
+}
+</style>

@@ -18,6 +18,6 @@ func (c *CameraRouter) InitRouter(Router *gin.RouterGroup) {
 		cameraRouter.GET("/conf/img", baseApi.GetImages)
 		cameraRouter.GET("/config/res", baseApi.ShowImages)
 		cameraRouter.GET("/test/video", baseApi.ShowVideos)
-		cameraRouter.GET("/stream/:id", baseApi.ShowRTSP)
+		cameraRouter.POST("/stream", baseApi.ShowRTSP)
 	}
 }

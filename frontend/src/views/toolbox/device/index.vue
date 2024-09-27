@@ -1,6 +1,17 @@
 <template>
     <div v-loading="loading">
         <LayoutContent :title="$t('toolbox.device.toolbox')" :divider="true">
+            <template #toolbar>
+                <div class="router-button">
+                    <el-button link type="primary" @click="onRestart('1panel')">
+                        {{ $t('home.restart_1panel') }}
+                    </el-button>
+                    <el-divider direction="vertical" />
+                    <el-button link type="primary" @click="onRestart('system')">
+                        {{ $t('home.restart_system') }}
+                    </el-button>
+                </div>
+            </template>
             <template #main>
                 <el-row style="margin-top: 20px">
                     <el-col :span="1"><br /></el-col>
@@ -132,7 +143,17 @@ const form = reactive({
 
     swapItem: '',
 });
-
+const restartType = ref();
+const confirmDialogRef = ref();
+const onRestart = (type: string) => {
+    restartType.value = type;
+    let params = {
+        header: i18n.global.t('home.restart_' + type),
+        operationInfo: '',
+        submitInputInfo: i18n.global.t('database.restartNow'),
+    };
+    confirmDialogRef.value!.acceptParams(params);
+};
 const onChangeTimeZone = () => {
     timeZoneRef.value.acceptParams({ timeZone: form.timeZone });
 };

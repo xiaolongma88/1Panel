@@ -1,7 +1,7 @@
 import { Layout } from '@/routers/constant';
 
 const cronRouter = {
-    sort: 8,
+/*    sort: 8,
     path: '/cronjobs',
     component: Layout,
     redirect: '/cronjobs',
@@ -18,7 +18,7 @@ const cronRouter = {
                 requiresAuth: false,
             },
         },
-    ],
+    ],*/
 };
 
 export default cronRouter;
