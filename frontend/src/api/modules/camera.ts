@@ -8,8 +8,8 @@ export const getCameraConfigs = () => {
 export const updateCameraConfig = (req: Camera.CameraInfo) => {
     return http.post('/camera/conf/update', req);
 }
-export const getImages = () => {
-    return http.get('/camera/conf/img');
+export const getImages = (camId:string) => {
+    return http.get('/camera/conf/img',{camId:camId});
 }
 
 export const parseRTSP = (req:Camera.RtspInfo) => {

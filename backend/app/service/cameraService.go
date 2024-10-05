@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 )
 
 type CameraService struct {
@@ -20,7 +21,7 @@ type CameraService struct {
 type ICameraService interface {
 	GetContent() (response.Config, error)
 	UpdateContent(config dto.CameraContent) error
-	GetImages() ([]string, error)
+	GetImages(camId string) ([]string, error)
 	ParseRTSP(rtsp dto.RtspInfo) error
 }
 
@@ -62,7 +63,7 @@ func (f *CameraService) UpdateContent(config dto.CameraContent) error {
 	return nil
 }
 
-func (f *CameraService) GetImages() ([]string, error) {
+func (f *CameraService) GetImages(camId string) ([]string, error) {
 	dir, err := os.Open(global.CONF.DirConfig.ResultDir)
 	if err != nil {
 		return nil, err
@@ -75,7 +76,13 @@ func (f *CameraService) GetImages() ([]string, error) {
 	}
 	result := make([]string, len(files))
 	for _, file := range files {
-		result = append(result, file.Name())
+		imageName := strings.Split(file.Name(), "-")
+		fmt.Println(imageName)
+		fmt.Println("相机id:" + camId)
+		if imageName[0] == camId {
+			fmt.Println(file.Name())
+			result = append(result, file.Name())
+		}
 	}
 	return result, nil
 }

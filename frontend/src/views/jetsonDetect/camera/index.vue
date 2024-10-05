@@ -23,7 +23,7 @@ const initConfig = async () => {
 }
 
 const addOne = () =>{
-    form.cameras.push({camId:'',rtspPath:''})
+    form.cameras.push({camID:'',rtspPath:'',width:'600',height:'400'})
 }
 const delOne = (key) => {
     form.cameras.splice(key,1)
@@ -125,6 +125,12 @@ onMounted(() => {
                                 <el-col :span="20">
                                     <el-form-item label="相机ID">
                                         <el-input v-model="form.cameras[k].camID"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="宽">
+                                        <el-input v-model="form.cameras[k].width"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="高">
+                                        <el-input v-model="form.cameras[k].height"></el-input>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="4">

@@ -113,12 +113,9 @@
                             </div>
                         </div>
                         <div style="flex: 85%;display: flex;flex-wrap: wrap; row-gap: 20px;column-gap: 15px;padding: 10px">
-                            <el-tabs v-model="activeName" @tab-click="handleClick"
+                            <el-tabs v-model="activeIndex"  @tab-click="handleClick"
                                      style="color: #ffffff;width: 100%;height: 5%">
-                                <el-tab-pane v-for="(v,k) in form.cameras" :label="v.camID" :name="v.rtspPath" >
-
-                                </el-tab-pane>
-
+                                <el-tab-pane v-for="(v,k) in form.cameras" :label="v.camID" :key="k" :name="k" ></el-tab-pane>
                             </el-tabs>
                             <div>
                                 <video id="videoElement" controls autoplay muted style="width: 100%;height: 100%;border:1px solid #00FFAF;"></video>
@@ -201,7 +198,7 @@ import { getCameraConfigs, updateCameraConfig, getImages,parseRTSP } from "@/api
 import flvjs from 'flv.js';
 
 const globalStore = GlobalStore();
-
+const activeIndex = ref('1')
 const leftOneRef = ref();
 const leftTwoRef = ref();
 const leftThreeRef = ref();
@@ -225,6 +222,7 @@ let DataTimer: NodeJS.Timer | null = null;
 let isActive = ref(true);
 const nowDate = ref('')
 const nowDay = ref('')
+const activeName = ref();
 const searchInfo = reactive({
     ioOption: "all",
     netOption: "all"
@@ -314,6 +312,7 @@ const initConfig = async () => {
         RtspAddr: form.cameras[0].rtspPath
     }
     activeName.value = form.cameras[0].camID
+    activeIndex.value = 0
     parseRTSP(data).then(res =>{
         if (res.code == 200) {
             videoUrl.value = "http://localhost:8080/pullLive?port=8888&app=live&stream=" + form.cameras[0].camID;
@@ -1096,7 +1095,7 @@ const refreshDate = () => {
     nowDate.value = `${hours}:${minutes}:${seconds}`
 }
 const results = async () => {
-    getImages().then((res) => {
+    getImages(activeName.value).then((res) => {
         urls.value = [];
         res.data.map(item => {
             if (item != "") urls.value.push("http://localhost:9999/api/v1/camera/config/res?imageName=" + item);
@@ -1154,13 +1153,14 @@ const exitFullScreen = (event) => {
     }
 };
 
-const activeName = ref();
+
 
 const handleClick = (tab, event: Event) => {
     const data = {
         CameraID: tab.props.label,
-        RtspAddr: tab.props.name
+        RtspAddr: form.cameras[tab.props.name].rtspPath
     }
+    activeName.value = tab.props.label
     parseRTSP(data).then(res =>{
         if (res.code == 200) {
             videoUrl.value = "http://localhost:8080/pullLive?port=8888&app=live&stream=" + tab.props.label;

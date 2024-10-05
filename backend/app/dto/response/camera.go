@@ -12,6 +12,8 @@ type CameraConfig struct {
 	CameraList []struct {
 		CamID    string `json:"camID"`
 		RtspPath string `json:"rtspPath"`
+		Width    string `json:"width"`
+		Height   string `json:"height"`
 	} `json:"cameraList"`
 }
 

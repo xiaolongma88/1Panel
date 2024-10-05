@@ -45,7 +45,8 @@ func (b *BaseApi) UpdateCameraConfig(c *gin.Context) {
 }
 
 func (b *BaseApi) GetImages(c *gin.Context) {
-	result, err := cameraService.GetImages()
+	camId := c.Query("camId")
+	result, err := cameraService.GetImages(camId)
 	if err != nil {
 		helper.ErrorWithDetail(c, constant.CodeErrInternalServer, constant.ErrTypeInternalServer, err)
 		return
