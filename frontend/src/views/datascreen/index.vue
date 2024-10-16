@@ -1161,6 +1161,7 @@ const handleClick = (tab, event: Event) => {
         RtspAddr: form.cameras[tab.props.name].rtspPath
     }
     activeName.value = tab.props.label
+    results()
     parseRTSP(data).then(res =>{
         if (res.code == 200) {
             videoUrl.value = "http://localhost:8080/pullLive?port=8888&app=live&stream=" + tab.props.label;

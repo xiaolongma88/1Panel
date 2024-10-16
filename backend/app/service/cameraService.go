@@ -77,10 +77,7 @@ func (f *CameraService) GetImages(camId string) ([]string, error) {
 	result := make([]string, len(files))
 	for _, file := range files {
 		imageName := strings.Split(file.Name(), "-")
-		fmt.Println(imageName)
-		fmt.Println("相机id:" + camId)
 		if imageName[0] == camId {
-			fmt.Println(file.Name())
 			result = append(result, file.Name())
 		}
 	}
